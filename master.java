@@ -372,6 +372,193 @@ public class RecoverTheBST {
 
 
 
+import java.util.*;
+
+public class Graph {
+
+    private static void DFS(List<List<Integer>> adjList, Boolean[] visited, int startNode){
+        
+        visited[startNode] = true;
+        System.out.print(startNode + " ");
+
+        List<Integer> n = adjList.get(startNode);
+        for(int v : n){
+            if(!visited[v]){
+                DFS(adjList, visited, v);
+            }
+        }
+
+    }
+
+    private static void topSort(List<List<Integer>> adjList, int[] indeg){
+
+        Queue<Integer> queue = new LinkedList<>();
+        for(int i : indeg){
+            if(i == 0){
+                queue.offer(i);
+            }
+        }
+
+
+
+        while(!queue.isEmpty()){
+            int u = queue.poll();
+            System.out.print(u+ " ");
+
+            for(int i : adjList.get(u)){
+                indeg[i]--;
+
+                if(indeg[i] == 0){
+                    queue.offer(i);
+                }
+            }
+        }
+    }
+
+    private static void BFS(List<List<Integer>> adjList, Boolean[] visited, int startNode){
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(startNode);
+        visited[startNode] = true;
+
+        while(!queue.isEmpty()){
+            int curr = queue.poll();
+
+            System.out.print(curr + " ");
+            for(int n : adjList.get(curr)){
+                if(!visited[n]){
+                    visited[n] = true;
+                    queue.offer(n);
+                }
+            }
+        }
+    }
+
+    //private static void topSort(List<List<Integer>> adjList, )
+
+    public static void main(String args[]){
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        List<List<Integer>> adjList = new ArrayList<>();
+        int i;
+    
+        for(i=0; i<n; i++){
+            adjList.add(new ArrayList<>());
+        }
+    
+        int e = sc.nextInt();
+        for(i=0; i<e; i++){
+            adjList.get(sc.nextInt()).add(sc.nextInt());
+        }
+
+        Boolean[] visited = new Boolean[n];
+        for(i=0; i<n; i++){
+            visited[i] = false;
+        }
+        
+        DFS(adjList,visited,0);
+        for(i=0; i<n; i++){
+            visited[i] = false;
+        }
+        System.out.println();
+        BFS(adjList, visited, 0);
+
+        int[] indeg = new int[n];
+
+        for(i=0; i<n; i++){
+            for(int v : adjList.get(i)){
+                indeg[v]++;
+            }
+        }
+        System.out.println();
+
+        topSort(adjList, indeg);
+        sc.close();
+    }
+}
+
+
+import java.util.*;
+
+public class BellmanFord {
+    static class Edge {
+        int source, destination, weight;
+
+        Edge(int source, int destination, int weight) {
+            this.source = source;
+            this.destination = destination;
+            this.weight = weight;
+        }
+    }
+
+    static class Graph {
+        int vertices, edges;
+        List<Edge> edgeList;
+
+        Graph(int vertices, int edges) {
+            this.vertices = vertices;
+            this.edges = edges;
+            edgeList = new ArrayList<>();
+        }
+
+        void addEdge(int source, int destination, int weight) {
+            edgeList.add(new Edge(source, destination, weight));
+        }
+
+        void bellmanFord(int source) {
+            int[] distance = new int[vertices];
+            Arrays.fill(distance, Integer.MAX_VALUE);
+            distance[source] = 0;
+
+            // Relax all edges |V| - 1 times
+            for (int i = 0; i < vertices - 1; i++) {
+                for (Edge edge : edgeList) {
+                    if (distance[edge.source] != Integer.MAX_VALUE &&
+                        distance[edge.source] + edge.weight < distance[edge.destination]) {
+                        distance[edge.destination] = distance[edge.source] + edge.weight;
+                    }
+                }
+            }
+
+            // Check for negative weight cycles
+            for (Edge edge : edgeList) {
+                if (distance[edge.source] != Integer.MAX_VALUE &&
+                    distance[edge.source] + edge.weight < distance[edge.destination]) {
+                    System.out.println("Graph contains negative weight cycle!");
+                    return;
+                }
+            }
+
+            // Print shortest distances
+            System.out.println("Shortest distances from source " + source + ":");
+            for (int i = 0; i < vertices; i++) {
+                System.out.println("Vertex " + i + ": " + distance[i]);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        int vertices = 5;
+        int edges = 8;
+        int source = 0;
+
+        Graph graph = new Graph(vertices, edges);
+        graph.addEdge(0, 1, -1);
+        graph.addEdge(0, 2, 4);
+        graph.addEdge(1, 2, 3);
+        graph.addEdge(1, 3, 2);
+        graph.addEdge(1, 4, 2);
+        graph.addEdge(3, 2, 5);
+        graph.addEdge(3, 1, 1);
+        graph.addEdge(4, 3, -3);
+
+        graph.bellmanFord(source);
+    }
+}
+
+
+
+
+
 
 
 
