@@ -224,3 +224,154 @@ public class Tree{
         sc.close();
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+===========================================================================================================================
+
+
+
+
+import java.util.*;
+
+class TreeNode{
+    int val;
+    TreeNode left,right;
+    TreeNode(int val){
+        this.val = val;
+        this.left = null;
+        this.right = null;
+    }
+}
+
+public class RecoverTheBST {
+
+    static TreeNode FIN = null, SIN = null, prevNode = new TreeNode(Integer.MIN_VALUE);
+
+    private static TreeNode build(String[] s){
+        TreeNode root = new TreeNode(Integer.parseInt(s[0]));
+        
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        int index = 1;
+
+        while(!queue.isEmpty() && index < s.length){
+            TreeNode curr = queue.poll();
+            if(!s[index].equals("N")){
+                curr.left = new TreeNode(Integer.parseInt(s[index]));
+                queue.offer(curr.left);
+            }
+            index++;
+
+            if(!s[index].equals("N")){
+                curr.right = new TreeNode(Integer.parseInt(s[index]));
+                queue.offer(curr.right);
+            }
+            index++;
+        }
+
+        return root;
+    }
+
+    private static void insertBSTNodes(TreeNode root,String s){
+        if(s.equals("N")) return;
+
+        int val = Integer.parseInt(s);
+
+        if(root == null){
+            root = new TreeNode(val);
+        }else{
+            if(val < root.val){
+                if(root.left == null){
+                    root.left = new TreeNode(val);
+                }else{
+                    insertBSTNodes(root.left, s);
+                }
+            }else{
+                if(root.right == null){
+                    root.right = new TreeNode(val);
+                }else{
+                    insertBSTNodes(root.right, s);
+                }
+            }
+        }
+
+    }
+
+    private static void inorderBST(TreeNode root){
+        if(root == null) return;
+        inorderBST(root.left);
+        System.out.print(root.val);
+        inorderBST(root.right);
+    }
+
+    private static TreeNode buildBST(String[] s){
+        TreeNode root = new TreeNode(Integer.parseInt(s[0]));
+
+        for(int i=1; i<s.length; i++){
+            insertBSTNodes(root,s[i]);
+        }
+
+        return root;
+    }
+
+    private static void inorderRBST(TreeNode root){
+        if(root == null) return;
+
+        inorderRBST(root.left);
+
+        if(FIN == null && root.val <= prevNode.val){
+            FIN = prevNode;
+        }else if(FIN != null && root.val <= prevNode.val){
+            SIN = root;
+        }
+        prevNode = root;
+        inorderRBST(root.right);
+
+
+    }
+
+    private static void recoverTheBST(TreeNode root){
+        inorderRBST(root);
+
+        int t = FIN.val;
+        FIN.val = SIN.val;
+        SIN.val = t;
+    }
+
+    public static void main(String args[]){
+        Scanner sc = new Scanner(System.in);
+        String s[] = sc.nextLine().split(" ");
+        // TreeNode root = buildBST(s);
+        // inorderBST(root);
+
+        TreeNode wrongBSTRoot = build(s);
+        System.out.println("Wrong BST Order: ");
+        inorderBST(wrongBSTRoot);
+        recoverTheBST(wrongBSTRoot);
+        System.out.println("Right BST Order");
+        inorderBST(wrongBSTRoot);
+        sc.close();
+    }
+}
+
+
+
+
+
+
